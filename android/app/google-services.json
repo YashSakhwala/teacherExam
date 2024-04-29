@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "616776498788",
+    "project_id": "quizup-f3714",
+    "storage_bucket": "quizup-f3714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616776498788:android:61a95eee62d6daf19de971",
+        "android_client_info": {
+          "package_name": "com.teacher.quizup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCctYoMXPc39QYQ3-9Ae3MB_igJoL405bQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
