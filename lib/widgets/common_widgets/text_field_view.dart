@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_style.dart';
+import '../../utils/validation.dart';
 
 class TextFieldView extends StatelessWidget {
   final String? labelText;
@@ -16,6 +17,11 @@ class TextFieldView extends StatelessWidget {
   final int? maxLines;
   final TextInputType? keyboardType;
   final bool? enabled;
+  final bool needValidator;
+  final bool emailValidator;
+  final bool phoneNoValidator;
+  final bool passwordValidator;
+
   const TextFieldView({
     super.key,
     this.labelText,
@@ -29,11 +35,15 @@ class TextFieldView extends StatelessWidget {
     this.maxLines,
     this.keyboardType,
     this.enabled,
+    this.needValidator = false,
+    this.emailValidator = false,
+    this.phoneNoValidator = false,
+    this.passwordValidator = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       // maxLines: maxLines,
@@ -77,6 +87,15 @@ class TextFieldView extends StatelessWidget {
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
       ),
+      validator: needValidator
+          ? (value) => TextFieldValidation.validation(
+                isEmailValidator: emailValidator,
+                isPasswordValidator: passwordValidator,
+                isPhoneNumberValidator: phoneNoValidator,
+                message: hintText,
+                value: value,
+              )
+          : null,
     );
   }
 }

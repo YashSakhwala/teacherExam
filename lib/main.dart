@@ -2,10 +2,14 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teacherexam/screens/splash_screen.dart';
+import 'config/local_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  LocalStorage.sharedPreferences = await SharedPreferences.getInstance();
 
   await Firebase.initializeApp();
 
