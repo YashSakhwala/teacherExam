@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_style.dart';
 import '../../utils/validation.dart';
@@ -14,13 +15,14 @@ class TextFieldView extends StatelessWidget {
   final TextEditingController controller;
   final bool? fullTextView;
   final TextStyle? labelStyle;
-  final int? maxLines;
   final TextInputType? keyboardType;
   final bool? enabled;
   final bool needValidator;
+  final bool nameValidator;
   final bool emailValidator;
   final bool phoneNoValidator;
   final bool passwordValidator;
+  final List<TextInputFormatter>? inputFormatters;
 
   const TextFieldView({
     super.key,
@@ -32,21 +34,23 @@ class TextFieldView extends StatelessWidget {
     this.hintText,
     this.prefixIcon,
     this.labelStyle,
-    this.maxLines,
     this.keyboardType,
     this.enabled,
     this.needValidator = false,
+    this.nameValidator = false,
     this.emailValidator = false,
     this.phoneNoValidator = false,
     this.passwordValidator = false,
+    this.inputFormatters,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
       controller: controller,
       keyboardType: keyboardType,
-      // maxLines: maxLines,
+      inputFormatters: inputFormatters,
       enabled: enabled,
       cursorColor: AppColors.primaryColor,
       obscureText: obscureText!,
@@ -92,7 +96,7 @@ class TextFieldView extends StatelessWidget {
                 isEmailValidator: emailValidator,
                 isPasswordValidator: passwordValidator,
                 isPhoneNumberValidator: phoneNoValidator,
-                message: hintText,
+                message: labelText,
                 value: value,
               )
           : null,

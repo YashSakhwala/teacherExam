@@ -2,6 +2,8 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:teacherexam/controller/auth_controller.dart';
 import 'package:teacherexam/screens/edit_question/edit_question_screen.dart';
 import 'package:teacherexam/screens/exam_detail/exam_detail_screen.dart';
 import 'package:teacherexam/screens/setting/setting_screen.dart';
@@ -18,6 +20,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController search = TextEditingController();
+
+  AuthController authController = Get.put(AuthController());
 
   List examList = [
     {"examName": "Math"},
@@ -39,36 +43,39 @@ class _HomeScreenState extends State<HomeScreen> {
               bottom: Radius.circular(20),
             ),
           ),
-          title: Row(
-            children: [
-              CircleAvatar(
-                maxRadius: 38,
-                backgroundColor: AppColors.whiteColor,
-                backgroundImage: Image.asset(AppImages.boy).image,
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Hello,",
-                    style: AppTextStyle.regularTextStyle.copyWith(
-                      fontSize: 15,
-                      color: AppColors.whiteColor,
+          title: Obx(
+            () => Row(
+              children: [
+                CircleAvatar(
+                  maxRadius: 38,
+                  backgroundColor: AppColors.whiteColor,
+                  backgroundImage:
+                      Image.network(authController.userData["image"]).image,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Hello,",
+                      style: AppTextStyle.regularTextStyle.copyWith(
+                        fontSize: 15,
+                        color: AppColors.whiteColor,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Lukasz",
-                    style: AppTextStyle.largeTextStyle.copyWith(
-                      fontSize: 25,
-                      color: AppColors.whiteColor,
+                    Text(
+                      authController.userData["name"],
+                      style: AppTextStyle.largeTextStyle.copyWith(
+                        fontSize: 25,
+                        color: AppColors.whiteColor,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
           actions: [
             Padding(
@@ -79,10 +86,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context) => SettingScreen(),
                   ));
                 },
-                child: Image.asset(
-                  AppImages.fillProfile,
-                  height: 23,
-                  color: AppColors.whiteColor,
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: Center(
+                    child: Image.asset(
+                      AppImages.fillProfile,
+                      height: 23,
+                      color: AppColors.whiteColor,
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:teacherexam/config/app_colors.dart';
+import 'package:teacherexam/controller/exam_detail_controller.dart';
 import 'package:teacherexam/screens/question/question_screen.dart';
 import 'package:teacherexam/widgets/common_widgets/text_field_view.dart';
 import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
@@ -16,6 +18,8 @@ class ExamDetailScreen extends StatefulWidget {
 }
 
 class _ExamDetailScreenState extends State<ExamDetailScreen> {
+  ExamDetailController examDetailController = Get.put(ExamDetailController());
+
   final TextEditingController subject = TextEditingController();
   final TextEditingController mcq = TextEditingController();
   final TextEditingController date = TextEditingController();
@@ -119,13 +123,21 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
             ),
             ButtonView(
               title: "Add questions",
-              onTap: () {
+              onTap: () async {
                 if (subject.text.isEmpty ||
                     mcq.text.isEmpty ||
                     date.text.isEmpty ||
                     time.text.isEmpty) {
                   toastView(msg: "Please fill all fields");
                 } else {
+                  examDetailController.examDetail(
+                    subject: subject.text,
+                    mcq: int.parse(mcq.text),
+                    date: date.text,
+                    time: time.text,
+                    context: context,
+                  );
+
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => QuestionScreen(mcq: mcq.text),
                   ));

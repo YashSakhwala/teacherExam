@@ -25,6 +25,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   AuthController authController = Get.put(AuthController());
 
+  final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController phoneNo = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -80,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: AppColors.whiteColor,
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                            image: authController.imagePath.value == ""
+                            image: authController.imagePath.value.isEmpty
                                 ? Image.asset(
                                     AppImages.fillProfile,
                                     scale: 12,
@@ -88,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 : Image.file(
                                         File(authController.imagePath.value))
                                     .image,
-                            fit: authController.imagePath.value == ""
+                            fit: authController.imagePath.value.isEmpty
                                 ? BoxFit.none
                                 : BoxFit.cover,
                           ),
@@ -119,6 +120,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 20,
               ),
               TextFieldView(
+                labelText: "Name",
+                controller: name,
+                needValidator: true,
+                nameValidator: true,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              TextFieldView(
                 labelText: "Email",
                 controller: email,
                 needValidator: true,
@@ -130,6 +140,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               TextFieldView(
                 labelText: "Phone No",
                 controller: phoneNo,
+                keyboardType: TextInputType.phone,
                 needValidator: true,
                 phoneNoValidator: true,
               ),
@@ -203,12 +214,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   if (_formkey.currentState!.validate()) {
                     if (password.text != verifyPassword.text) {
                       toastView(msg: "Both passwords are not same");
+                    } else if (authController.imagePath.value.isEmpty) {
+                      toastView(msg: "Please select image");
                     } else {
                       authController.signUp(
+                        name: name.text,
                         email: email.text,
+                        phoneNo: phoneNo.text,
                         password: password.text,
                         context: context,
-                        phoneNo: phoneNo.text,
                       );
                     }
                   }

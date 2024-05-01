@@ -3,6 +3,7 @@ class TextFieldValidation {
   static String? validation({
     String? value,
     String? message,
+    bool isNameValidator = false,
     bool isEmailValidator = false,
     bool isPasswordValidator = false,
     bool isPhoneNumberValidator = false,
@@ -16,6 +17,8 @@ class TextFieldValidation {
         return null;
       }
     } else if (value!.isEmpty || !RegExp(r'[A-Za-z0-9]').hasMatch(value)) {
+      return "$message is required!";
+    } else if (isNameValidator == true) {
       return "$message is required!";
     } else if (isEmailValidator == true) {
       if (value.isEmpty) {

@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, invalid_use_of_protected_member
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:teacherexam/config/app_style.dart';
-import 'package:teacherexam/controller/question_controller.dart';
+import 'package:teacherexam/screens/home/home_screen.dart';
 import 'package:teacherexam/widgets/common_widgets/button_view.dart';
 import 'package:teacherexam/widgets/common_widgets/text_field_view.dart';
 import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
@@ -22,14 +22,13 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final TextEditingController question = TextEditingController();
-  final TextEditingController answer1 = TextEditingController();
-  final TextEditingController answer2 = TextEditingController();
-  final TextEditingController answer3 = TextEditingController();
-  final TextEditingController answer4 = TextEditingController();
+  final TextEditingController option1 = TextEditingController();
+  final TextEditingController option2 = TextEditingController();
+  final TextEditingController option3 = TextEditingController();
+  final TextEditingController option4 = TextEditingController();
+  final TextEditingController answer = TextEditingController();
 
   final PageController pageController = PageController();
-
-  QuestionController questionController = Get.put(QuestionController());
 
   @override
   Widget build(BuildContext context) {
@@ -70,44 +69,37 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ),
                       TextFieldView(
                         labelText: 'Option 1',
-                        controller: answer1,
+                        controller: option1,
                       ),
                       TextFieldView(
                         labelText: 'Option 2',
-                        controller: answer2,
+                        controller: option2,
                       ),
                       TextFieldView(
                         labelText: 'Option 3',
-                        controller: answer3,
+                        controller: option3,
                       ),
                       TextFieldView(
                         labelText: 'Option 4',
-                        controller: answer4,
+                        controller: option4,
                       ),
                       SizedBox(
                         height: 30,
                       ),
                       Text(
-                        "Answer",
+                        "option",
                         style: AppTextStyle.largeTextStyle,
                       ),
                       SizedBox(
                         height: 10,
                       ),
-                      Obx(
-                        () => DropdownButton<dynamic>(
-                          isExpanded: true,
-                          value: questionController.country.value,
-                          items: questionController.countryList.value
-                              .map((e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Text(e),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            questionController.country.value = value;
-                          },
-                        ),
+                      TextFieldView(
+                        labelText: 'option',
+                        controller: answer,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                        ],
                       ),
                       SizedBox(
                         height: 50,
@@ -115,10 +107,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ButtonView(
                         onTap: () {
                           if (question.text.isEmpty ||
-                              answer1.text.isEmpty ||
-                              answer2.text.isEmpty ||
-                              answer3.text.isEmpty ||
-                              answer4.text.isEmpty) {
+                              option1.text.isEmpty ||
+                              option2.text.isEmpty ||
+                              option3.text.isEmpty ||
+                              option4.text.isEmpty ||
+                              answer.text.isEmpty) {
                             toastView(msg: "Please fill all fields");
                           } else {
                             if (index < int.tryParse(widget.mcq)! - 1) {
@@ -127,11 +120,20 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                 curve: Curves.easeInOut,
                               );
                               question.text = "";
-                              answer1.text = "";
-                              answer2.text = "";
-                              answer3.text = "";
-                              answer4.text = "";
+                              option1.text = "";
+                              option2.text = "";
+                              option3.text = "";
+                              option4.text = "";
+                              answer.text = "";
                             }
+                          }
+
+                          if (index == int.tryParse(widget.mcq)! - 1) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
+                                (route) => false);
                           }
                         },
                         title: index == int.tryParse(widget.mcq)! - 1
