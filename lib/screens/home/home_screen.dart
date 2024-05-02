@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List examList = [
     {"examName": "Math"},
     {"examName": "English"},
-    {"examName": "Physical"},
+    {"examName": "Physics"},
     {"examName": "Chemistry"},
   ];
 
@@ -49,8 +49,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 CircleAvatar(
                   maxRadius: 38,
                   backgroundColor: AppColors.whiteColor,
-                  backgroundImage:
-                      Image.network(authController.userData["image"]).image,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                        strokeWidth: 2,
+                      ),
+                      CircleAvatar(
+                        maxRadius: 38,
+                        backgroundColor: AppColors.transparentColor,
+                        backgroundImage: Image.network(
+                          authController.userData["image"],
+                        ).image,
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   width: 20,
@@ -169,6 +183,13 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 30,
             ),
+            // Center(
+            //   child: Lottie.asset(
+            //     "assets/lottie/empty.json",
+            //     height: 200,
+            //     width: 200,
+            //   ),
+            // ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

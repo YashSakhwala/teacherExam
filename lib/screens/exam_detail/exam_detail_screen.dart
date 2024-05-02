@@ -69,6 +69,15 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                         initialDate: DateTime.now(),
                         firstDate: DateTime.now(),
                         lastDate: DateTime(2040),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme:
+                                  ColorScheme.light(primary: Colors.blue),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (dateTime != null) {
                         setState(() {
@@ -98,6 +107,15 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                       TimeOfDay? timeOfDay = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.now(),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme:
+                                  ColorScheme.light(primary: Colors.blue),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (timeOfDay != null) {
                         time.text = timeOfDay.format(context);
@@ -129,17 +147,16 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                     date.text.isEmpty ||
                     time.text.isEmpty) {
                   toastView(msg: "Please fill all fields");
+                } else if (mcq.text == "0") {
+                  toastView(msg: "Please enter a valid number");
                 } else {
-                  examDetailController.examDetail(
-                    subject: subject.text,
-                    mcq: int.parse(mcq.text),
-                    date: date.text,
-                    time: time.text,
-                    context: context,
-                  );
-
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => QuestionScreen(mcq: mcq.text),
+                    builder: (context) => QuestionScreen(
+                      subject: subject.text,
+                      mcq: mcq.text,
+                      date: date.text,
+                      time: time.text,
+                    ),
                   ));
                 }
               },

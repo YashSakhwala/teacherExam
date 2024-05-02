@@ -5,4 +5,5 @@ class LocalStorage {
 
   static String logIn = "logIn";
   static String userId = "userId";
+  static String randomCode = "randomCode";
 }

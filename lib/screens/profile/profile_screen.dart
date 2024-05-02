@@ -23,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController phoneNo = TextEditingController();
-  XFile? newImage;
 
   @override
   void initState() {
@@ -48,25 +47,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
               XFile? xFile =
                   await imagePicker.pickImage(source: ImageSource.gallery);
 
-              newImage = xFile;
+              authController.imagePath.value = xFile!.path;
             },
             child: Stack(
               children: [
                 Obx(
-                  () => Container(
-                    height: 140,
-                    width: 140,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.primaryColor),
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: newImage != null
-                            ? FileImage(File(newImage!.path))
-                            : Image.network(authController.userData["image"])
-                                .image,
-                        fit: BoxFit.cover,
+                  () => Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                        strokeWidth: 2,
                       ),
-                    ),
+                      Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.primaryColor),
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: authController.imagePath.value.isNotEmpty
+                                ? FileImage(
+                                    File(authController.imagePath.value))
+                                : Image.network(
+                                        authController.userData["image"])
+                                    .image,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Positioned(
@@ -109,6 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   TextFieldView(
                     labelText: "Email",
                     controller: email,
+                    enabled: false,
                   ),
                   SizedBox(
                     height: 15,
@@ -127,7 +138,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         name: name.text,
                         email: email.text,
                         phoneNo: phoneNo.text,
-                        newImage: newImage,
                         context: context,
                       );
                     },

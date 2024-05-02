@@ -2,18 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:teacherexam/config/app_style.dart';
-import 'package:teacherexam/screens/home/home_screen.dart';
+import 'package:teacherexam/controller/exam_detail_controller.dart';
+import 'package:teacherexam/screens/bottom_bar/bottom_bar_screen.dart';
 import 'package:teacherexam/widgets/common_widgets/button_view.dart';
 import 'package:teacherexam/widgets/common_widgets/text_field_view.dart';
 import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
 
 class QuestionScreen extends StatefulWidget {
+  final String subject;
   final String mcq;
+  final String date;
+  final String time;
 
   const QuestionScreen({
     super.key,
     required this.mcq,
+    required this.subject,
+    required this.date,
+    required this.time,
   });
 
   @override
@@ -29,6 +37,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
   final TextEditingController answer = TextEditingController();
 
   final PageController pageController = PageController();
+
+  ExamDetailController examDetailController = Get.put(ExamDetailController());
+
+  List<Map<String, dynamic>> questions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -87,18 +99,19 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         height: 30,
                       ),
                       Text(
-                        "option",
+                        "Answer",
                         style: AppTextStyle.largeTextStyle,
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       TextFieldView(
-                        labelText: 'option',
+                        labelText: 'Answer',
                         controller: answer,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(1),
+                          FilteringTextInputFormatter.allow(RegExp(r'[1-4]')),
                         ],
                       ),
                       SizedBox(
@@ -114,11 +127,25 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               answer.text.isEmpty) {
                             toastView(msg: "Please fill all fields");
                           } else {
+                            Map<String, dynamic> questionMap = {
+                              "question": question.text,
+                              "options": [
+                                option1.text,
+                                option2.text,
+                                option3.text,
+                                option4.text,
+                              ],
+                              "answer": answer.text,
+                            };
+
+                            questions.add(questionMap);
+
                             if (index < int.tryParse(widget.mcq)! - 1) {
                               pageController.nextPage(
                                 duration: Duration(milliseconds: 400),
                                 curve: Curves.easeInOut,
                               );
+
                               question.text = "";
                               option1.text = "";
                               option2.text = "";
@@ -129,9 +156,18 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           }
 
                           if (index == int.tryParse(widget.mcq)! - 1) {
+                            examDetailController.examDetail(
+                              subject: widget.subject,
+                              mcq: int.parse(widget.mcq),
+                              date: widget.date,
+                              time: widget.time,
+                              questions: questions,
+                              context: context,
+                            );
+
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) => HomeScreen(),
+                                  builder: (context) => BottomBarScreen(),
                                 ),
                                 (route) => false);
                           }

@@ -109,12 +109,28 @@ class _SettingScreenState extends State<SettingScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppColors.whiteColor,
-                              image: DecorationImage(
-                                image: Image.network(
-                                  authController.userData["image"],
-                                ).image,
-                                fit: BoxFit.cover,
-                              ),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: AppColors.primaryColor,
+                                  strokeWidth: 2,
+                                ),
+                                Container(
+                                  height: 75,
+                                  width: 75,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: Image.network(
+                                        authController.userData["image"],
+                                      ).image,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

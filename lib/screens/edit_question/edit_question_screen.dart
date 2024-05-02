@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:teacherexam/controller/exam_detail_controller.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_style.dart';
 import '../../widgets/common_widgets/button_view.dart';
@@ -14,6 +16,8 @@ class EditQuestionScreen extends StatefulWidget {
 }
 
 class _EditQuestionScreenState extends State<EditQuestionScreen> {
+  ExamDetailController examDetailController = Get.put(ExamDetailController());
+
   final TextEditingController subject = TextEditingController();
   final TextEditingController mcq = TextEditingController();
   final TextEditingController date = TextEditingController();
@@ -63,6 +67,15 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                         initialDate: DateTime.now(),
                         firstDate: DateTime(1990),
                         lastDate: DateTime(2040),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme:
+                                  ColorScheme.light(primary: Colors.blue),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (dateTime != null) {
                         setState(() {
@@ -92,6 +105,15 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                       TimeOfDay? timeOfDay = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.now(),
+                        builder: (BuildContext context, Widget? child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme:
+                                  ColorScheme.light(primary: Colors.blue),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (timeOfDay != null) {
                         time.text = timeOfDay.format(context);
@@ -116,8 +138,16 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
               height: 80,
             ),
             ButtonView(
-              onTap: () {},
               title: "Save changes",
+              onTap: () {
+                examDetailController.updateExamDetail(
+                  subject: subject.text,
+                  mcq: int.parse(mcq.text),
+                  date: date.text,
+                  time: time.text,
+                  context: context,
+                );
+              },
             ),
           ],
         ),

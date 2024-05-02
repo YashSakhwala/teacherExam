@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import '../config/local_storage.dart';
 import '../screens/bottom_bar/bottom_bar_screen.dart';
 import '../widgets/common_widgets/indicator_view.dart';
@@ -139,7 +138,6 @@ class AuthController extends GetxController {
     required String name,
     required String email,
     required String phoneNo,
-    required XFile? newImage,
     required BuildContext context,
   }) async {
     try {
@@ -151,48 +149,50 @@ class AuthController extends GetxController {
           LocalStorage.sharedPreferences.getString(LocalStorage.userId);
 
       FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+
       String url = "";
+      if (imagePath.value.isNotEmpty) {
+        String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+        String imageExt = imagePath.value.split("/").last.split(".").last;
 
-      String imageName = DateTime.now().millisecondsSinceEpoch.toString();
-      String imageExt = imagePath.value.split("/").last.split(".").last;
+        Reference reference = firebaseStorage.ref("$imageName.$imageExt");
 
-      Reference reference = firebaseStorage.ref("$imageName.$imageExt");
+        UploadTask uploadTask = reference.putFile(File(imagePath.value));
 
-      UploadTask uploadTask = reference.putFile(File(newImage!.path));
+        TaskSnapshot taskSnapshot = await uploadTask;
+        if (taskSnapshot.state == TaskState.success) {
+          url = await reference.getDownloadURL();
 
-      TaskSnapshot taskSnapshot = await uploadTask;
-      if (taskSnapshot.state == TaskState.success) {
-        url = await reference.getDownloadURL();
+          await firebaseFirestore.collection("Teacher").doc(userId).update({
+            "image": url,
+          });
 
-        await firebaseFirestore.collection("Teacher").doc(userId).update({
-          "image": url,
-        });
-
-        userData["image"] = url;
-      } else {
-        toastView(msg: "Failed to upload image");
+          userData["image"] = url;
+        } else {
+          toastView(msg: "Failed to upload image");
+        }
       }
 
       await firebaseFirestore.collection("Teacher").doc(userId).update({
         "name": name,
         "email": email,
         "phoneNo": phoneNo,
-        "image": url,
       });
 
-      userData.value = {
+      Map<String, dynamic> data = {
         "name": name,
         "email": email,
         "phoneNo": phoneNo,
-        "image": url,
+        "image": imagePath.value.isNotEmpty ? url : userData["image"],
       };
+
+      userData.value = data;
 
       toastView(msg: "Profile updated successfully");
 
       Navigator.of(context).pop();
     } catch (e) {
-      print("Error: $e");
-      toastView(msg: "Failed to update profile $e");
+      toastView(msg: "Failed to update profile");
 
       Navigator.of(context).pop();
     }
