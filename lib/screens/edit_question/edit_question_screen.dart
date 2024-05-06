@@ -1,153 +1,176 @@
-// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:teacherexam/controller/exam_detail_controller.dart';
-import '../../config/app_colors.dart';
+
 import '../../config/app_style.dart';
+import '../../controller/exam_detail_controller.dart';
 import '../../widgets/common_widgets/button_view.dart';
 import '../../widgets/common_widgets/text_field_view.dart';
+import '../../widgets/common_widgets/toast_view.dart';
 
 class EditQuestionScreen extends StatefulWidget {
-  const EditQuestionScreen({super.key});
+  final String mcq;
+  final String code;
+
+  const EditQuestionScreen({
+    super.key,
+    required this.mcq,
+    required this.code,
+  });
 
   @override
   State<EditQuestionScreen> createState() => _EditQuestionScreenState();
 }
 
 class _EditQuestionScreenState extends State<EditQuestionScreen> {
+  final TextEditingController question = TextEditingController();
+  final TextEditingController option1 = TextEditingController();
+  final TextEditingController option2 = TextEditingController();
+  final TextEditingController option3 = TextEditingController();
+  final TextEditingController option4 = TextEditingController();
+  final TextEditingController answer = TextEditingController();
+
+  final PageController pageController = PageController();
+
   ExamDetailController examDetailController = Get.put(ExamDetailController());
 
-  final TextEditingController subject = TextEditingController();
-  final TextEditingController mcq = TextEditingController();
-  final TextEditingController date = TextEditingController();
-  final TextEditingController time = TextEditingController();
+  List questions = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
+        child: Column(
           children: [
-            Center(
-              child: Text(
-                "Exam details",
-                style: AppTextStyle.regularTextStyle.copyWith(fontSize: 20),
+            Expanded(
+              child: PageView.builder(
+                controller: pageController,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: int.tryParse(widget.mcq),
+                itemBuilder: (context, index) {
+                  question.text = examDetailController.questionData['questions']
+                      [index]['question'];
+                  option1.text = examDetailController.questionData['questions']
+                      [index]['options'][0];
+                  option2.text = examDetailController.questionData['questions']
+                      [index]['options'][1];
+                  option3.text = examDetailController.questionData['questions']
+                      [index]['options'][2];
+                  option4.text = examDetailController.questionData['questions']
+                      [index]['options'][3];
+                  answer.text = examDetailController.questionData['questions']
+                      [index]['answer'];
+
+                  return ListView(
+                    children: [
+                      Text(
+                        "Question ${index + 1}",
+                        style:
+                            AppTextStyle.largeTextStyle.copyWith(fontSize: 22),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFieldView(
+                        labelText: 'Enter your question',
+                        controller: question,
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        "Options",
+                        style: AppTextStyle.largeTextStyle,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFieldView(
+                        labelText: 'Option 1',
+                        controller: option1,
+                      ),
+                      TextFieldView(
+                        labelText: 'Option 2',
+                        controller: option2,
+                      ),
+                      TextFieldView(
+                        labelText: 'Option 3',
+                        controller: option3,
+                      ),
+                      TextFieldView(
+                        labelText: 'Option 4',
+                        controller: option4,
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        "Answer",
+                        style: AppTextStyle.largeTextStyle,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFieldView(
+                        labelText: 'Answer',
+                        controller: answer,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                          FilteringTextInputFormatter.allow(RegExp(r'[1-4]')),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      ButtonView(
+                        onTap: () {
+                          if (question.text.isEmpty ||
+                              option1.text.isEmpty ||
+                              option2.text.isEmpty ||
+                              option3.text.isEmpty ||
+                              option4.text.isEmpty ||
+                              answer.text.isEmpty) {
+                            toastView(msg: "Please fill all fields");
+                          } else {
+                            Map questionMap = {
+                              "question": question.text,
+                              "options": [
+                                option1.text,
+                                option2.text,
+                                option3.text,
+                                option4.text,
+                              ],
+                              "answer": answer.text,
+                            };
+
+                            questions.add(questionMap);
+
+                            if (index < int.tryParse(widget.mcq)! - 1) {
+                              pageController.nextPage(
+                                duration: Duration(milliseconds: 400),
+                                curve: Curves.easeInOut,
+                              );
+                            } else {
+                              examDetailController.updateQuestionDetail(
+                                code: widget.code,
+                                questions: questions,
+                                context: context,
+                              );
+                            }
+                          }
+                        },
+                        title: index == int.tryParse(widget.mcq)! - 1
+                            ? "Finish"
+                            : "Next",
+                      ),
+                    ],
+                  );
+                },
               ),
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            TextFieldView(
-              labelText: "Subject name",
-              labelStyle: AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
-              controller: subject,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFieldView(
-              labelText: "Total MCQ",
-              labelStyle: AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
-              controller: mcq,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {
-                      DateTime? dateTime = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1990),
-                        lastDate: DateTime(2040),
-                        builder: (BuildContext context, Widget? child) {
-                          return Theme(
-                            data: ThemeData.light().copyWith(
-                              colorScheme:
-                                  ColorScheme.light(primary: Colors.blue),
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
-                      if (dateTime != null) {
-                        setState(() {
-                          date.text = dateTime.toString().split(' ').first;
-                        });
-                      }
-                    },
-                    child: TextFieldView(
-                      labelText: "Date",
-                      labelStyle:
-                          AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
-                      controller: date,
-                      suffixIcon: Icon(
-                        Icons.calendar_month_outlined,
-                        color: AppColors.greyColor,
-                      ),
-                      enabled: false,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {
-                      TimeOfDay? timeOfDay = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                        builder: (BuildContext context, Widget? child) {
-                          return Theme(
-                            data: ThemeData.light().copyWith(
-                              colorScheme:
-                                  ColorScheme.light(primary: Colors.blue),
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
-                      if (timeOfDay != null) {
-                        time.text = timeOfDay.format(context);
-                      }
-                    },
-                    child: TextFieldView(
-                      labelText: "Time",
-                      labelStyle:
-                          AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
-                      controller: time,
-                      suffixIcon: Icon(
-                        Icons.watch_later_outlined,
-                        color: AppColors.greyColor,
-                      ),
-                      enabled: false,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 80,
-            ),
-            ButtonView(
-              title: "Save changes",
-              onTap: () {
-                examDetailController.updateExamDetail(
-                  subject: subject.text,
-                  mcq: int.parse(mcq.text),
-                  date: date.text,
-                  time: time.text,
-                  context: context,
-                );
-              },
             ),
           ],
         ),

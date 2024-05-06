@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:teacherexam/config/app_style.dart';
 import 'package:teacherexam/controller/exam_detail_controller.dart';
-import 'package:teacherexam/screens/bottom_bar/bottom_bar_screen.dart';
 import 'package:teacherexam/widgets/common_widgets/button_view.dart';
 import 'package:teacherexam/widgets/common_widgets/text_field_view.dart';
 import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
@@ -15,6 +14,7 @@ class QuestionScreen extends StatefulWidget {
   final String mcq;
   final String date;
   final String time;
+  final String examDuration;
 
   const QuestionScreen({
     super.key,
@@ -22,6 +22,7 @@ class QuestionScreen extends StatefulWidget {
     required this.subject,
     required this.date,
     required this.time,
+    required this.examDuration,
   });
 
   @override
@@ -40,7 +41,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   ExamDetailController examDetailController = Get.put(ExamDetailController());
 
-  List<Map<String, dynamic>> questions = [];
+  List questions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +128,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               answer.text.isEmpty) {
                             toastView(msg: "Please fill all fields");
                           } else {
-                            Map<String, dynamic> questionMap = {
+                            Map questionMap = {
                               "question": question.text,
                               "options": [
                                 option1.text,
@@ -135,6 +136,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                 option3.text,
                                 option4.text,
                               ],
+                              "grpValue": -1,
                               "answer": answer.text,
                             };
 
@@ -162,14 +164,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               date: widget.date,
                               time: widget.time,
                               questions: questions,
+                              examDuration: widget.examDuration,
                               context: context,
                             );
-
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                  builder: (context) => BottomBarScreen(),
-                                ),
-                                (route) => false);
                           }
                         },
                         title: index == int.tryParse(widget.mcq)! - 1

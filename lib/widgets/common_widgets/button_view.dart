@@ -10,6 +10,7 @@ class ButtonView extends StatelessWidget {
   final Function() onTap;
   final Color? containerColor;
   final Color? titleColor;
+  final BorderRadiusGeometry? borderRadius;
   const ButtonView({
     super.key,
     this.height,
@@ -18,6 +19,7 @@ class ButtonView extends StatelessWidget {
     required this.onTap,
     this.containerColor,
     this.titleColor,
+    this.borderRadius,
   });
 
   @override
@@ -28,7 +30,7 @@ class ButtonView extends StatelessWidget {
         height: height ?? 55,
         width: width ?? double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: borderRadius ?? BorderRadius.circular(30),
           border: Border.all(color: AppColors.whiteColor),
           color: containerColor ?? AppColors.primaryColor,
         ),

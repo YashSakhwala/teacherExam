@@ -3,22 +3,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:teacherexam/config/app_colors.dart';
 import 'package:teacherexam/controller/exam_detail_controller.dart';
-import 'package:teacherexam/screens/question/question_screen.dart';
-import 'package:teacherexam/widgets/common_widgets/text_field_view.dart';
-import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
+import 'package:teacherexam/screens/edit_question/edit_question_screen.dart';
+import '../../config/app_colors.dart';
 import '../../config/app_style.dart';
 import '../../widgets/common_widgets/button_view.dart';
+import '../../widgets/common_widgets/text_field_view.dart';
 
-class ExamDetailScreen extends StatefulWidget {
-  const ExamDetailScreen({super.key});
+class EditExamDetailScreen extends StatefulWidget {
+  final int index;
+  const EditExamDetailScreen({
+    super.key,
+    required this.index,
+  });
 
   @override
-  State<ExamDetailScreen> createState() => _ExamDetailScreenState();
+  State<EditExamDetailScreen> createState() => _EditExamDetailScreenState();
 }
 
-class _ExamDetailScreenState extends State<ExamDetailScreen> {
+class _EditExamDetailScreenState extends State<EditExamDetailScreen> {
   ExamDetailController examDetailController = Get.put(ExamDetailController());
 
   final TextEditingController subject = TextEditingController();
@@ -26,6 +29,21 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
   final TextEditingController examDuration = TextEditingController();
   final TextEditingController date = TextEditingController();
   final TextEditingController time = TextEditingController();
+  final TextEditingController code = TextEditingController();
+
+  @override
+  void initState() {
+    subject.text = examDetailController.homeScreenExam[widget.index]["subject"];
+    mcq.text =
+        examDetailController.homeScreenExam[widget.index]["mcq"].toString();
+    examDuration.text =
+        examDetailController.homeScreenExam[widget.index]["examDuration"];
+    date.text = examDetailController.homeScreenExam[widget.index]["date"];
+    time.text = examDetailController.homeScreenExam[widget.index]["time"];
+    code.text =
+        examDetailController.homeScreenExam[widget.index]["code"].toString();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +63,6 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
             ),
             TextFieldView(
               labelText: "Subject name",
-              labelStyle: AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
               controller: subject,
             ),
             SizedBox(
@@ -53,7 +70,6 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
             ),
             TextFieldView(
               labelText: "Total MCQ",
-              labelStyle: AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
               controller: mcq,
               keyboardType: TextInputType.number,
             ),
@@ -63,12 +79,19 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
             TextFieldView(
               labelText: "Exam duration",
               hintText: "hh:mm",
-              labelStyle: AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
               controller: examDuration,
               keyboardType: TextInputType.datetime,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(5),
               ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            TextFieldView(
+              labelText: "Exam code",
+              controller: code,
+              enabled: false,
             ),
             SizedBox(
               height: 10,
@@ -82,7 +105,7 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                       DateTime? dateTime = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
+                        firstDate: DateTime(1990),
                         lastDate: DateTime(2040),
                         builder: (BuildContext context, Widget? child) {
                           return Theme(
@@ -102,8 +125,6 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                     },
                     child: TextFieldView(
                       labelText: "Date",
-                      labelStyle:
-                          AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
                       controller: date,
                       suffixIcon: Icon(
                         Icons.calendar_month_outlined,
@@ -138,8 +159,6 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                     },
                     child: TextFieldView(
                       labelText: "Time",
-                      labelStyle:
-                          AppTextStyle.regularTextStyle.copyWith(fontSize: 18),
                       controller: time,
                       suffixIcon: Icon(
                         Icons.watch_later_outlined,
@@ -154,36 +173,43 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
             SizedBox(
               height: 80,
             ),
-            ButtonView(
-              title: "Add questions",
-              onTap: () async {
-                if (subject.text.isEmpty ||
-                    mcq.text.isEmpty ||
-                    date.text.isEmpty ||
-                    time.text.isEmpty ||
-                    examDuration.text.isEmpty) {
-                  toastView(msg: "Please fill all fields");
+            Row(
+              children: [
+                ButtonView(
+                  width: MediaQuery.of(context).size.width / 2.2,
+                  title: "Preview of question",
+                  onTap: () {
+                    examDetailController.getQuestionDetail(
+                      code: int.parse(code.text),
+                    );
 
-                  return;
-                } else if (!RegExp(
-                  r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$',
-                ).hasMatch(examDuration.text)) {
-                  toastView(msg: "Please enter valid format");
-                  return;
-                } else if (mcq.text == "0") {
-                  toastView(msg: "Please enter a valid number");
-                } else {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => QuestionScreen(
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => EditQuestionScreen(
+                        mcq: mcq.text,
+                        code: code.text,
+                      ),
+                    ));
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                ButtonView(
+                  title: "Save changes",
+                  width: MediaQuery.of(context).size.width / 2.3,
+                  onTap: () {
+                    examDetailController.updateExamDetail(
                       subject: subject.text,
-                      mcq: mcq.text,
+                      mcq: int.parse(mcq.text),
+                      examDuration: examDuration.text,
                       date: date.text,
                       time: time.text,
-                      examDuration: examDuration.text,
-                    ),
-                  ));
-                }
-              },
+                      code: int.parse(code.text),
+                      context: context,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

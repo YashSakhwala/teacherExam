@@ -31,9 +31,11 @@ class AuthController extends GetxController {
       final UserCredential userCredential = await firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
 
-      print(userCredential.user!.uid);
-
       await LocalStorage.sharedPreferences.setBool(LocalStorage.logIn, true);
+      await LocalStorage.sharedPreferences
+          .setString(LocalStorage.userId, userCredential.user!.uid);
+
+      await getProfileData(context: context);
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
@@ -98,12 +100,6 @@ class AuthController extends GetxController {
           .setString(LocalStorage.userId, userCredential.user!.uid);
 
       getProfileData(context: context);
-
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => BottomBarScreen(),
-          ),
-          (route) => false);
     } catch (e) {
       toastView(msg: "User is already exist");
       Navigator.of(context).pop();
