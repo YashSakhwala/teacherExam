@@ -12,6 +12,7 @@ import '../../widgets/common_widgets/text_field_view.dart';
 
 class EditExamDetailScreen extends StatefulWidget {
   final int index;
+
   const EditExamDetailScreen({
     super.key,
     required this.index,
@@ -173,43 +174,29 @@ class _EditExamDetailScreenState extends State<EditExamDetailScreen> {
             SizedBox(
               height: 80,
             ),
-            Row(
-              children: [
-                ButtonView(
-                  width: MediaQuery.of(context).size.width / 2.2,
-                  title: "Preview of question",
-                  onTap: () {
-                    examDetailController.getQuestionDetail(
-                      code: int.parse(code.text),
-                    );
+            ButtonView(
+              width: MediaQuery.of(context).size.width / 2.2,
+              title: "Preview of question",
+              onTap: () {
+                Map data = {
+                  "subject": subject.text.toString(),
+                  "mcq": int.parse(mcq.text),
+                  "examDuration": examDuration.text,
+                  "date": date.text,
+                  "time": time.text,
+                  "code": int.parse(code.text),
+                };
+                examDetailController.editExamData.value = data;
 
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EditQuestionScreen(
-                        mcq: mcq.text,
-                        code: code.text,
-                      ),
-                    ));
-                  },
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                ButtonView(
-                  title: "Save changes",
-                  width: MediaQuery.of(context).size.width / 2.3,
-                  onTap: () {
-                    examDetailController.updateExamDetail(
-                      subject: subject.text,
-                      mcq: int.parse(mcq.text),
-                      examDuration: examDuration.text,
-                      date: date.text,
-                      time: time.text,
-                      code: int.parse(code.text),
-                      context: context,
-                    );
-                  },
-                ),
-              ],
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => EditQuestionScreen(
+                    mcq: mcq.text,
+                    code: code.text,
+                    question: examDetailController.homeScreenExam[widget.index]
+                        ["questions"],
+                  ),
+                ));
+              },
             ),
           ],
         ),

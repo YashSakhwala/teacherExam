@@ -22,7 +22,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   void initState() {
-    examDetailController.getExam();
+    Future.microtask(() => examDetailController.getExam());
     super.initState();
   }
 

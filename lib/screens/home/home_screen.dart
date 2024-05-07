@@ -27,7 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    examDetailController.getExam();
+    Future.microtask(() async {
+      await examDetailController.getExam();
+    });
     super.initState();
   }
 

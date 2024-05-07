@@ -17,7 +17,7 @@ class ExamDetailController extends GetxController {
   RxList homeScreenExam = [].obs;
   RxList historyScreenExam = [].obs;
   RxBool isLoader = false.obs;
-  RxMap questionData = {}.obs;
+  RxMap editExamData = {}.obs;
 
   Future<void> examDetail({
     required String subject,
@@ -37,6 +37,9 @@ class ExamDetailController extends GetxController {
 
     int randomCode = DateTime.now().millisecondsSinceEpoch % 1000000;
 
+    var teacherData =
+        await firebaseFirestore.collection("Teacher").doc(userId).get();
+
     await firebaseFirestore.collection("Exams").doc(randomCode.toString()).set({
       "subject": subject,
       "mcq": mcq,
@@ -46,10 +49,8 @@ class ExamDetailController extends GetxController {
       "code": randomCode,
       "questions": questions,
       "teacherId": userId,
+      "teacherName": teacherData["name"],
     });
-
-    var teacherData =
-        await firebaseFirestore.collection("Teacher").doc(userId).get();
 
     showExamDetailDialog(
       code: randomCode,
@@ -59,8 +60,6 @@ class ExamDetailController extends GetxController {
       time: time,
       context: context,
     );
-
-    getExam();
   }
 
   void showExamDetailDialog({
@@ -133,7 +132,14 @@ class ExamDetailController extends GetxController {
                     width: 100,
                     borderRadius: BorderRadius.circular(18),
                     onTap: () {
-                      Clipboard.setData(ClipboardData(text: code.toString()))
+                      String examDetails = '''
+Exam Code: $code\n
+Teacher Name: $teacherName\n
+Subject Name: $subjectName\n
+Date: $date\n
+Time: $time\n
+''';
+                      Clipboard.setData(ClipboardData(text: examDetails))
                           .then((_) {
                         toastView(msg: "Code successfully copied");
                       });
@@ -152,9 +158,9 @@ class ExamDetailController extends GetxController {
                     borderRadius: BorderRadius.circular(18),
                     onTap: () {
                       String examDetails = '''
-Exam_Code: $code\n
-Teacher_Name: $teacherName\n
-Subject_Name: $subjectName\n
+Exam Code: $code\n
+Teacher Name: $teacherName\n
+Subject Name: $subjectName\n
 Date: $date\n
 Time: $time\n
 ''';
@@ -255,55 +261,21 @@ Time: $time\n
     }
   }
 
-  Future<void> updateExamDetail({
-    required String subject,
-    required int mcq,
-    required String examDuration,
-    required String date,
-    required String time,
-    required int code,
+  Future<void> updateQuestionDetail({
+    required String code,
+    required List questions,
     required BuildContext context,
   }) async {
     indicatorView(context);
 
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-    await firebaseFirestore.collection("Exams").doc(code.toString()).update({
-      "subject": subject,
-      "mcq": mcq,
-      "examDuration": examDuration,
-      "date": date,
-      "time": time,
-    });
-
-    toastView(msg: "Details updated successfully");
-
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => BottomBarScreen(),
-        ),
-        (route) => false);
-  }
-
-  Future<void> getQuestionDetail({
-    required int code,
-  }) async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-
-    var data =
-        await firebaseFirestore.collection("Exams").doc(code.toString()).get();
-
-    questionData.value = data.data() ?? {};
-  }
-
-  Future<void> updateQuestionDetail({
-    required String code,
-    required List questions,
-    required BuildContext context,
-  }) async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-
     await firebaseFirestore.collection("Exams").doc(code).update({
+      "subject": editExamData["subject"],
+      "mcq": editExamData["mcq"],
+      "examDuration": editExamData["examDuration"],
+      "date": editExamData["date"],
+      "time": editExamData["time"],
       "questions": questions,
     });
 

@@ -13,11 +13,13 @@ import '../../widgets/common_widgets/toast_view.dart';
 class EditQuestionScreen extends StatefulWidget {
   final String mcq;
   final String code;
+  final List question;
 
   const EditQuestionScreen({
     super.key,
     required this.mcq,
     required this.code,
+    required this.question,
   });
 
   @override
@@ -40,6 +42,7 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.mcq);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -51,18 +54,24 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: int.tryParse(widget.mcq),
                 itemBuilder: (context, index) {
-                  question.text = examDetailController.questionData['questions']
-                      [index]['question'];
-                  option1.text = examDetailController.questionData['questions']
-                      [index]['options'][0];
-                  option2.text = examDetailController.questionData['questions']
-                      [index]['options'][1];
-                  option3.text = examDetailController.questionData['questions']
-                      [index]['options'][2];
-                  option4.text = examDetailController.questionData['questions']
-                      [index]['options'][3];
-                  answer.text = examDetailController.questionData['questions']
-                      [index]['answer'];
+                  question.text = index >= widget.question.length
+                      ? ""
+                      : widget.question[index]['question'];
+                  option1.text = index >= widget.question.length
+                      ? ""
+                      : widget.question[index]['options'][0];
+                  option2.text = index >= widget.question.length
+                      ? ""
+                      : widget.question[index]['options'][1];
+                  option3.text = index >= widget.question.length
+                      ? ""
+                      : widget.question[index]['options'][2];
+                  option4.text = index >= widget.question.length
+                      ? ""
+                      : widget.question[index]['options'][3];
+                  answer.text = index >= widget.question.length
+                      ? ""
+                      : widget.question[index]['answer'];
 
                   return ListView(
                     children: [
