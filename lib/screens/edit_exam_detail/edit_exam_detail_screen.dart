@@ -9,13 +9,16 @@ import '../../config/app_colors.dart';
 import '../../config/app_style.dart';
 import '../../widgets/common_widgets/button_view.dart';
 import '../../widgets/common_widgets/text_field_view.dart';
+import '../../widgets/common_widgets/toast_view.dart';
 
 class EditExamDetailScreen extends StatefulWidget {
+  final String teacherName;
   final int index;
 
   const EditExamDetailScreen({
     super.key,
     required this.index,
+    required this.teacherName,
   });
 
   @override
@@ -89,10 +92,25 @@ class _EditExamDetailScreenState extends State<EditExamDetailScreen> {
             SizedBox(
               height: 10,
             ),
-            TextFieldView(
-              labelText: "Exam code",
-              controller: code,
-              enabled: false,
+            GestureDetector(
+              onTap: () {
+                String examDetails = '''
+Exam Code: ${code.text}\n
+Teacher Name: ${widget.teacherName}\n
+Subject Name: ${subject.text}\n
+Date: ${date.text}\n
+Time: ${time.text}\n
+''';
+                Clipboard.setData(ClipboardData(text: examDetails)).then((_) {
+                  toastView(msg: "Code successfully copied");
+                });
+              },
+              child: TextFieldView(
+                labelText: "Exam code",
+                controller: code,
+                enabled: false,
+                suffixIcon: Icon(Icons.copy_all),
+              ),
             ),
             SizedBox(
               height: 10,

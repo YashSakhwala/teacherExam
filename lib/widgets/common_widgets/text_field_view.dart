@@ -10,7 +10,6 @@ class TextFieldView extends StatelessWidget {
   final String? labelText;
   final String? hintText;
   final Widget? suffixIcon;
-  final Widget? prefixIcon;
   final bool? obscureText;
   final TextEditingController controller;
   final bool? fullTextView;
@@ -32,7 +31,6 @@ class TextFieldView extends StatelessWidget {
     required this.controller,
     this.fullTextView,
     this.hintText,
-    this.prefixIcon,
     this.labelStyle,
     this.keyboardType,
     this.enabled,
@@ -89,7 +87,7 @@ class TextFieldView extends StatelessWidget {
           color: AppColors.greyColor,
         ),
         suffixIcon: suffixIcon,
-        prefixIcon: prefixIcon,
+        suffixIconColor: AppColors.primaryColor,
       ),
       validator: needValidator
           ? (value) => TextFieldValidation.validation(

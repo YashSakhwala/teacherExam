@@ -155,6 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => EditExamDetailScreen(
+                                    teacherName:
+                                        authController.userData["name"],
                                     index: index,
                                   ),
                                 ));

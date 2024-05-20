@@ -1,4 +1,3 @@
-
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
@@ -152,6 +151,7 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                                 option3.text,
                                 option4.text,
                               ],
+                              "grpValue": "-1",
                               "answer": answer.text,
                             };
 
