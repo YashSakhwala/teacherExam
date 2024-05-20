@@ -1,9 +1,9 @@
+
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import '../../config/app_style.dart';
 import '../../controller/exam_detail_controller.dart';
 import '../../widgets/common_widgets/button_view.dart';
@@ -42,7 +42,6 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.mcq);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, invalid_use_of_protected_member
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,7 +38,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
   final TextEditingController answer = TextEditingController();
 
   final PageController pageController = PageController();
-
   ExamDetailController examDetailController = Get.put(ExamDetailController());
 
   List questions = [];
@@ -136,7 +135,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                 option3.text,
                                 option4.text,
                               ],
-                              "grpValue": -1,
+                              "grpValue": "-1",
                               "answer": answer.text,
                             };
 

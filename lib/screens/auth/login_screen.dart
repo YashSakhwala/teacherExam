@@ -1,8 +1,12 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teacherexam/screens/welcome/welcome_screen.dart';
+import 'package:teacherexam/widgets/common_widgets/indicator_view.dart';
+import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_image.dart';
 import '../../config/app_style.dart';
@@ -87,12 +91,34 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 10,
               ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  "Forgot password?",
-                  style: AppTextStyle.smallTextStyle.copyWith(
-                    color: AppColors.primaryColor,
+              InkWell(
+                onTap: () async {
+                  if (RegExp(
+                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                      .hasMatch(email.text)) {
+                    indicatorView(context);
+
+                    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+                    await firebaseAuth.sendPasswordResetEmail(
+                        email: email.text);
+
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => WelcomeScreen(),
+                        ),
+                        (route) => false);
+                  } else {
+                    toastView(msg: "Please enter valid email");
+                  }
+                },
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(
+                    "Forgot password?",
+                    style: AppTextStyle.smallTextStyle.copyWith(
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ),
               ),

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:teacherexam/config/app_colors.dart';
-import 'package:teacherexam/screens/leaderboard/leaderboard_screen.dart';
 import '../../config/app_image.dart';
 import '../../config/app_style.dart';
 import '../../controller/exam_detail_controller.dart';
@@ -68,9 +67,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => LeaderboardScreen(),
-                              ));
+                              examDetailController.getStudentData(
+                                code: examDetailController
+                                    .historyScreenExam[index]["code"],
+                                context: context,
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.all(8),

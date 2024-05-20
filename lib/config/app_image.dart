@@ -20,4 +20,8 @@ class AppImages {
   static const String torch = "assets/icons/torch.png";
   static const String terms = "assets/icons/terms.png";
   static const String contactUs = "assets/icons/contact_us.png";
+
+  //Marks screen icons
+  static const String right = "assets/icons/right.png";
+  static const String wrong = "assets/icons/wrong.png";
 }

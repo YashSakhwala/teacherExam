@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:teacherexam/controller/auth_controller.dart';
@@ -127,6 +127,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   TextFieldView(
                     labelText: "Phone no",
                     controller: phoneNo,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                   ),
                   SizedBox(
                     height: 70,

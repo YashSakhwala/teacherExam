@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, sort_child_properties_last
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -70,33 +70,36 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(
-                  width: 20,
+                  width: 10,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hello,",
-                      style: AppTextStyle.regularTextStyle.copyWith(
-                        fontSize: 15,
-                        color: AppColors.whiteColor,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Hello,",
+                        style: AppTextStyle.regularTextStyle.copyWith(
+                          fontSize: 15,
+                          color: AppColors.whiteColor,
+                        ),
                       ),
-                    ),
-                    Text(
-                      authController.userData["name"],
-                      style: AppTextStyle.largeTextStyle.copyWith(
-                        fontSize: 25,
-                        color: AppColors.whiteColor,
+                      Text(
+                        authController.userData["name"],
+                        style: AppTextStyle.largeTextStyle.copyWith(
+                          fontSize: 25,
+                          color: AppColors.whiteColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(5),
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(

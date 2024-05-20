@@ -184,7 +184,7 @@ class _EditExamDetailScreenState extends State<EditExamDetailScreen> {
                   "examDuration": examDuration.text,
                   "date": date.text,
                   "time": time.text,
-                  "code": int.parse(code.text),
+                  "code": code.text,
                 };
                 examDetailController.editExamData.value = data;
 

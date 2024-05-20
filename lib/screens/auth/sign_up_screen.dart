@@ -1,11 +1,14 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously, non_constant_identifier_names
 
 import 'dart:io';
-
+import 'package:email_otp/email_otp.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:teacherexam/screens/auth/otp_verification_screen.dart';
+import 'package:teacherexam/widgets/common_widgets/indicator_view.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_image.dart';
 import '../../config/app_style.dart';
@@ -143,6 +146,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 keyboardType: TextInputType.phone,
                 needValidator: true,
                 phoneNoValidator: true,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(10),
+                ],
               ),
               SizedBox(
                 height: 5,
@@ -210,20 +216,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               ButtonView(
                 title: "Continue",
-                onTap: () {
+                onTap: () async {
                   if (_formkey.currentState!.validate()) {
                     if (password.text != verifyPassword.text) {
                       toastView(msg: "Both passwords are not same");
                     } else if (authController.imagePath.value.isEmpty) {
                       toastView(msg: "Please select image");
                     } else {
-                      authController.signUp(
-                        name: name.text,
-                        email: email.text,
-                        phoneNo: phoneNo.text,
-                        password: password.text,
-                        context: context,
+                      indicatorView(context);
+
+                      EmailOTP MyAuth = EmailOTP();
+
+                      MyAuth.setConfig(
+                        appEmail: "yashsakhwala@gmail.com",
+                        appName: "Quiz Up",
+                        userEmail: email.text,
+                        otpLength: 6,
+                        otpType: OTPType.digitsOnly,
                       );
+
+                      await MyAuth.sendOTP();
+
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => OTPVerificationScreen(
+                            name: name.text,
+                            email: email.text,
+                            phoneNo: phoneNo.text,
+                            password: password.text,
+                            myAuth: MyAuth),
+                      ));
                     }
                   }
                 },

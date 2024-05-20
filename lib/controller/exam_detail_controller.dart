@@ -1,5 +1,6 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_const_constructors
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'package:teacherexam/widgets/common_widgets/toast_view.dart';
 import '../config/app_colors.dart';
 import '../config/app_style.dart';
 import '../screens/bottom_bar/bottom_bar_screen.dart';
+import '../screens/leaderboard/leaderboard_screen.dart';
 import '../widgets/common_widgets/button_view.dart';
 
 class ExamDetailController extends GetxController {
@@ -18,6 +20,8 @@ class ExamDetailController extends GetxController {
   RxList historyScreenExam = [].obs;
   RxBool isLoader = false.obs;
   RxMap editExamData = {}.obs;
+
+  RxList studentData = [].obs;
 
   Future<void> examDetail({
     required String subject,
@@ -35,12 +39,26 @@ class ExamDetailController extends GetxController {
     String? userId =
         LocalStorage.sharedPreferences.getString(LocalStorage.userId);
 
-    int randomCode = DateTime.now().millisecondsSinceEpoch % 1000000;
+    String generateRandomCode() {
+      Random random = Random();
+      int firstCharCode = random.nextInt(26) + 'A'.codeUnitAt(0);
+      int lastCharCode = random.nextInt(26) + 'a'.codeUnitAt(0);
+      String middleDigits = '';
+      for (int i = 0; i < 6; i++) {
+        middleDigits += random.nextInt(10).toString();
+      }
+      String code = String.fromCharCode(firstCharCode) +
+          middleDigits +
+          String.fromCharCode(lastCharCode);
+      return code;
+    }
+
+    String randomCode = generateRandomCode();
 
     var teacherData =
         await firebaseFirestore.collection("Teacher").doc(userId).get();
 
-    await firebaseFirestore.collection("Exams").doc(randomCode.toString()).set({
+    await firebaseFirestore.collection("Exams").doc(randomCode).set({
       "subject": subject,
       "mcq": mcq,
       "examDuration": examDuration,
@@ -63,7 +81,7 @@ class ExamDetailController extends GetxController {
   }
 
   void showExamDetailDialog({
-    required int code,
+    required String code,
     required String teacherName,
     required String subjectName,
     required String date,
@@ -284,5 +302,29 @@ Time: $time\n
           builder: (context) => BottomBarScreen(),
         ),
         (route) => false);
+  }
+
+  Future<void> getStudentData({
+    required String code,
+    required BuildContext context,
+  }) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    var data = await firebaseFirestore
+        .collection("Exams")
+        .doc(code)
+        .collection("Answer")
+        .get();
+
+    studentData.value = data.docs.map((doc) => doc.data()).toList();
+
+    studentData.value = studentData.toList()
+      ..sort((a, b) => b["percentage"].compareTo(a["percentage"]));
+
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => LeaderboardScreen(
+        studentData: studentData,
+      ),
+    ));
   }
 }

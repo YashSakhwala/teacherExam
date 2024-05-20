@@ -1,6 +1,8 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, no_leading_underscores_for_local_identifiers
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_image.dart';
 import '../../config/app_style.dart';
@@ -31,9 +33,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               AppImages.welcome,
               height: 230,
             ),
+            SizedBox(
+              height: 5,
+            ),
             Center(
               child: Text(
-                "We currently have over \n740 exam waiting \nfor you!",
+                "Welcome to our educational platform, where learning meets innovation",
                 textAlign: TextAlign.center,
                 style: AppTextStyle.regularTextStyle.copyWith(
                   fontSize: 25,
@@ -99,6 +104,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryColor,
                       ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          final Uri _url = Uri.parse(
+                              "https://doc-hosting.flycricket.io/quiz-up-terms-of-use/65b0b200-860c-426e-b052-b3336c078a75/terms");
+
+                          if (!await launchUrl(_url)) {
+                            throw Exception("Could not launch $_url");
+                          }
+                        },
                     ),
                   ],
                 ),
