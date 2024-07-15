@@ -29,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     name.text = authController.userData["name"];
     email.text = authController.userData["email"];
     phoneNo.text = authController.userData["phoneNo"];
+    authController.imagePath.value = "";
     super.initState();
   }
 
@@ -47,7 +48,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               XFile? xFile =
                   await imagePicker.pickImage(source: ImageSource.gallery);
 
-              authController.imagePath.value = xFile!.path;
+              if (xFile != null && xFile.path.isNotEmpty) {
+                authController.imagePath.value = xFile.path;
+              }
             },
             child: Stack(
               children: [

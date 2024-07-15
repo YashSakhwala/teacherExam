@@ -27,6 +27,36 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
   final TextEditingController date = TextEditingController();
   final TextEditingController time = TextEditingController();
 
+  bool isTimeAtLeastOneHourLater(String selectedTime) {
+    final now = DateTime.now();
+
+    var timeOfDay = TimeOfDay(
+      hour: int.parse(selectedTime.split(":")[0]),
+      minute: int.parse(selectedTime.split(":")[1].split(" ")[0]),
+    );
+
+    if (selectedTime.contains("PM") && timeOfDay.hour < 12) {
+      timeOfDay = timeOfDay.replacing(hour: timeOfDay.hour + 12);
+    } else if (selectedTime.contains("AM") && timeOfDay.hour == 12) {
+      timeOfDay = timeOfDay.replacing(hour: 0);
+    }
+
+    final selectedDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      timeOfDay.hour,
+      timeOfDay.minute,
+    );
+
+    if (selectedDateTime.isBefore(now)) {
+      return false;
+    }
+
+    final difference = selectedDateTime.difference(now).inMinutes;
+    return difference >= 60;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,10 +198,15 @@ class _ExamDetailScreenState extends State<ExamDetailScreen> {
                 } else if (!RegExp(
                   r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$',
                 ).hasMatch(examDuration.text)) {
-                  toastView(msg: "Please enter valid format");
+                  toastView(msg: "Please enter valid time format");
                   return;
                 } else if (mcq.text == "0") {
-                  toastView(msg: "Please enter a valid number");
+                  toastView(msg: "Please enter a valid total mcq");
+                } else if (!isTimeAtLeastOneHourLater(time.text)) {
+                  toastView(
+                      msg:
+                          "Please select a time at least 1 hour later than the current time");
+                  return;
                 } else {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => QuestionScreen(

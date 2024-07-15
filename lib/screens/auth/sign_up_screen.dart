@@ -71,7 +71,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   XFile? xFile =
                       await imagePicker.pickImage(source: ImageSource.gallery);
 
-                  authController.imagePath.value = xFile!.path;
+                  if (xFile != null && xFile.path.isNotEmpty) {
+                    authController.imagePath.value = xFile.path;
+                  }
                 },
                 child: Stack(
                   children: [
